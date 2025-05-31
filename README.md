@@ -157,3 +157,39 @@ Khi đó, cấu hình `.env`:
 ```
 DATABASE_URL=mysql://vocabuser:yourpassword@db:3306/vocabdb?charset=utf8mb4
 ``` 
+
+## Truy cập các dịch vụ & API
+
+### Backend (FastAPI)
+- API Docs (Swagger UI): http://localhost:8000/docs
+- Redoc: http://localhost:8000/redoc
+
+#### Một số API chính:
+| Method | Endpoint                  | Mô tả                       |
+|--------|---------------------------|-----------------------------|
+| POST   | /api/auth/register        | Đăng ký tài khoản           |
+| POST   | /api/auth/login           | Đăng nhập                   |
+| GET    | /api/auth/me              | Lấy thông tin user hiện tại |
+| GET    | /api/vocab                | Lấy danh sách từ vựng       |
+| POST   | /api/vocab                | Thêm từ vựng mới            |
+| GET    | /api/vocab/categories     | Lấy danh sách chủ đề        |
+| GET    | /api/vocab/favorites      | Lấy từ vựng yêu thích       |
+| POST   | /api/vocab/favorites      | Thêm từ vào yêu thích        |
+| DELETE | /api/vocab/favorites/{id} | Xóa từ khỏi yêu thích        |
+
+> **Lưu ý:** Các endpoint `/api/vocab/*` yêu cầu xác thực bằng JWT Bearer Token.
+
+### Frontend (React)
+- Trang chủ: http://localhost:3000
+- Đăng nhập: http://localhost:3000/login
+- Hồ sơ cá nhân: http://localhost:3000/profile
+- Học từ vựng: http://localhost:3000/learn
+- Flashcard: http://localhost:3000/flashcard
+
+### Khi chạy bằng Docker Compose
+- Frontend: http://localhost:3000
+- Backend (Swagger): http://localhost:8000/docs
+
+### Khi chạy bằng Kubernetes (NodePort)
+- Frontend: http://<NodeIP>:30080
+- Backend (Swagger): http://<NodeIP>:8000 (nếu mở NodePort cho backend hoặc dùng Ingress) 
