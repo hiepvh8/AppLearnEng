@@ -2,6 +2,19 @@
 
 Ứng dụng học từ vựng tiếng Anh dành cho người Việt.
 
+## Mục lục
+1. [Tính năng chính](#tính-năng-chính)
+2. [Kiến trúc Hệ thống](#kiến-trúc-hệ-thống)
+3. [Yêu cầu hệ thống](#yêu-cầu-hệ-thống)
+4. [Cài đặt và Chạy](#cài-đặt-và-chạy)
+5. [Cấu trúc Project](#cấu-trúc-project)
+6. [Tài liệu API](#tài-liệu-api)
+7. [Thiết kế Database](#thiết-kế-database)
+8. [Bảo mật](#bảo-mật)
+9. [Triển khai](#triển-khai)
+10. [Testing](#testing)
+11. [License](#license)
+
 ## Tính năng chính
 
 - Hiển thị danh sách từ vựng theo chủ đề (TOEIC, IELTS, Giao tiếp)
@@ -12,11 +25,31 @@
 - Lưu trữ dữ liệu local
 - Hỗ trợ PWA
 
+## Kiến trúc Hệ thống
+
+### Tổng quan
+- Kiến trúc: Microservices
+- Frontend: React/Next.js
+- Backend: FastAPI (Python)
+- Database: SQLite/MySQL
+- Container: Docker
+- Orchestration: Kubernetes (tùy chọn)
+
+### Sơ đồ Kiến trúc
+```
++------------------+     +------------------+     +------------------+
+|     Frontend     |     |     Backend      |<--->|    Database     |
+|  (React/Next.js) |<--->|    (FastAPI)     |<--->| (SQLite/MySQL)  |
++------------------+     +------------------+     +------------------+
+```
+
 ## Yêu cầu hệ thống
 
 - Node.js 16+
 - Python 3.8+
-- SQLite3
+- SQLite3/MySQL
+- Docker (tùy chọn)
+- Kubernetes (tùy chọn)
 
 ## Cài đặt và Chạy
 
@@ -78,12 +111,96 @@ AppLearnEng/
     └── vocab_data/  # Vocabulary data
 ```
 
-## Chạy với Docker
+## Tài liệu API
 
+### Authentication
+| Method | Endpoint           | Mô tả                 |
+|--------|-------------------|----------------------|
+| POST   | /api/auth/register| Đăng ký tài khoản    |
+| POST   | /api/auth/login   | Đăng nhập            |
+| GET    | /api/auth/me      | Thông tin user       |
+
+### Vocabulary Management
+| Method | Endpoint                  | Mô tả                       |
+|--------|---------------------------|-----------------------------|
+| GET    | /api/vocab                | Lấy danh sách từ vựng       |
+| POST   | /api/vocab                | Thêm từ vựng mới            |
+| GET    | /api/vocab/categories     | Lấy danh sách chủ đề        |
+| GET    | /api/vocab/favorites      | Lấy từ vựng yêu thích       |
+| POST   | /api/vocab/favorites      | Thêm từ vào yêu thích       |
+| DELETE | /api/vocab/favorites/{id} | Xóa từ khỏi yêu thích       |
+
+## Thiết kế Database
+
+### Users Table
+```sql
+CREATE TABLE users (
+    id UUID PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### Vocabulary Table
+```sql
+CREATE TABLE vocabulary (
+    id UUID PRIMARY KEY,
+    word VARCHAR(100) NOT NULL,
+    meaning TEXT NOT NULL,
+    category VARCHAR(50) NOT NULL,
+    difficulty ENUM('BEGINNER', 'INTERMEDIATE', 'ADVANCED'),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+### UserProgress Table
+```sql
+CREATE TABLE user_progress (
+    id UUID PRIMARY KEY,
+    user_id UUID REFERENCES users(id),
+    vocab_id UUID REFERENCES vocabulary(id),
+    progress INTEGER DEFAULT 0,
+    completed BOOLEAN DEFAULT FALSE,
+    last_accessed TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+## Bảo mật
+
+### Các Biện pháp Bảo mật
+- JWT Authentication
+- Password Hashing (bcrypt)
+- HTTPS
+- CORS Configuration
+- Rate Limiting
+- Input Validation
+- SQL Injection Prevention
+
+### Quy trình Xử lý Dữ liệu
+- Mã hóa dữ liệu nhạy cảm
+- Backup và Recovery
+- Audit Logging
+- Session Management
+
+## Triển khai
+
+### Docker
 ```bash
 # Build và chạy containers
 docker-compose up --build
 ```
+
+### Kubernetes
+- Sử dụng Helm charts
+- ConfigMaps cho cấu hình
+- Secrets cho thông tin nhạy cảm
+- Ingress cho routing
+- PersistentVolumeClaims cho database
 
 ## Testing
 
@@ -91,21 +208,11 @@ docker-compose up --build
 # Chạy backend tests
 cd backend
 pytest
+
+# Chạy frontend tests
+cd frontend
+npm test
 ```
-
-## Khởi tạo dữ liệu mẫu
-
-Để khởi tạo dữ liệu mẫu cho ứng dụng, chạy lệnh sau:
-
-```bash
-cd backend
-python init_db.py
-```
-
-Dữ liệu mẫu bao gồm các từ vựng được phân loại theo các chủ đề:
-- TOEIC
-- IELTS
-- Communication
 
 ## License
 
