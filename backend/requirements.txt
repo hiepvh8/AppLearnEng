@@ -9,4 +9,5 @@ python-jose==3.3.0
 passlib==1.7.4
 python-multipart==0.0.6
 bcrypt==4.0.1
-mysqlclient==2.2.4 
+pymysql==1.1.0
+cryptography==42.0.2

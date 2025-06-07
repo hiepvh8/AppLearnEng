@@ -2,13 +2,17 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from database.database import Base
+import os
+
+# Cấu hình database URL với pymysql driver
+DATABASE_URL = os.getenv("DATABASE_URL", "mysql+pymysql://vocabuser:admin@db:3306/vocabdb?charset=utf8mb4")
 
 class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    email = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
+    email = Column(String(255), unique=True, index=True)
+    hashed_password = Column(String(255))
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     
@@ -20,10 +24,10 @@ class Vocabulary(Base):
     __tablename__ = "vocabularies"
 
     id = Column(Integer, primary_key=True, index=True)
-    word = Column(String, index=True)
-    meaning = Column(String)
-    example = Column(String)
-    category = Column(String, index=True)
+    word = Column(String(100), index=True)
+    meaning = Column(String(1000))
+    example = Column(String(2000))
+    category = Column(String(50), index=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     owner_id = Column(Integer, ForeignKey("users.id"))
     
